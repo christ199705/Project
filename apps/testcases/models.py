@@ -13,6 +13,6 @@ class Testcases(BaseModel):
     request = models.TextField("请求信息", help_text="请求信息")
 
     class Meta:
-        ab_table = "tb_testcases"
+        db_table = "tb_testcases"
         verbose_name = "用例信息"
         verbose_name_plural = verbose_name

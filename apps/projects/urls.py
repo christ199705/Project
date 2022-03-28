@@ -1,3 +1,4 @@
+
 """Project URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,25 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from .views import ProjectView
 from rest_framework import routers
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-# from rest_framework.schemas.views import SchemaView
+router = routers.SimpleRouter()
+router.register("", ProjectView)
 
-Schema_view = get_schema_view(
-    openapi.Info(
-        title="测试开发平台接口文档",
-        default_version='v1.0',
-        description="秦旺测试开发平台接口文档",
-        terms_of_service="http://qinwang.work",
-        contact=openapi.Contact(email="qinwang@codemao.cn"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    # permission_classes=(permissions.AllowAny,),  权限类
-)
 urlpatterns = [
-    path('project/', include("projects.urls")),
-    path('swagger/', Schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
 ]
+urlpatterns += router.urls

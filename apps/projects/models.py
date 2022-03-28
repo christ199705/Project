@@ -6,7 +6,7 @@ from utlis.base_model import BaseModel
 
 
 class Projects(BaseModel):
-    id = models.AutoField(primary_key=True, verbose_name="id主键", help_text="id主键")
+    id = models.AutoField(primary_key=True, verbose_name="id主键", help_text="id主键" )
     name = models.CharField("项目名称", max_length=200, unique=True, help_text="项目名称")
     leader = models.CharField("负责人", max_length=50, help_text="负责人")
     tester = models.CharField("测试人员", max_length=50, help_text="测试人员")
