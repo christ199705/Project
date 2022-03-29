@@ -28,9 +28,18 @@ class ByInterfacesSerializer(ModelSerializer):
         fields = ["id", "name"]
 
 
+class TestSerializers(ModelSerializer):
+    class Meta:
+        model = Interfaces
+        fields = ["id", "name"]
+
+
 class ProjectByInterfacesSerializer(ModelSerializer):
-    interface_set = ByInterfacesSerializer(read_only=True, many=True)
+    interfaces = TestSerializers(read_only=True, many=True)
 
     class Meta:
         model = Projects
-        fields = ["id", "interface_set"]
+        fields = [ "interfaces"]
+
+
+

@@ -1,7 +1,10 @@
+import django_filters
 from django.http import Http404
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from interfaces.models import Interfaces
 from .models import Projects
@@ -11,10 +14,14 @@ from rest_framework.viewsets import ModelViewSet
 from django.db.models import *
 from .utils import get_count_by_project
 
+
 class ProjectView(ModelViewSet):
     queryset = Projects.objects.all()
     serializer_class = ProjectModelSerializer
     lookup_field = "id"
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ["id", "name"]
+    ordering_fields = ["id","name"]
 
     # 重写删除项目
     def destroy(self, request, *args, **kwargs):
@@ -45,21 +52,25 @@ class ProjectView(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
-        queryset = Projects.objects.filter(is_delete=False)
+        queryset = self.filter_queryset(Projects.objects.filter(is_delete=False))
 
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
+            # 把serializer.data 传入我的自定义函数，增加字段，然后返回新的data，data是字典格式
             data = get_count_by_project(serializer.data)
             return self.get_paginated_response(data)
 
         serializer = self.get_serializer(queryset, many=True)
+        # 把serializer.data 传入我的自定义函数，增加字段，然后返回新的data
         data = get_count_by_project(serializer.data)
         return Response(data)
 
     @action(methods=["get"], detail=True)
     # 通过Id查询所有接口信息
     def interfaces(self, request, id, **kwargs):
-        interfaces_set = Interfaces.objects.filter(project=id)
-        serializer = ByInterfacesSerializer(instance=interfaces_set, many=True)
+        # 通过ID获取接口信息，可以通过两个序例化器实现，也可以通过自己用ID去接口表里面查询的方式
+        # interfaces_set = Interfaces.objects.filter(project=id)
+        interfaces_set = self.get_object()
+        serializer = ProjectByInterfacesSerializer(instance=interfaces_set)
         return Response(serializer.data)
