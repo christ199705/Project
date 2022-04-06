@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
@@ -46,12 +47,13 @@ INSTALLED_APPS = [
     "reports",
     "testcases",
     "testsuits",
-    "user",
+
     "projects",
 
     "django_filters",
     "drf_yasg",
     "rest_framework",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -136,5 +138,11 @@ STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "utlis.paging.PageConfig",
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.OrderingFilter',)
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.OrderingFilter',),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ],
+
 }
+
+

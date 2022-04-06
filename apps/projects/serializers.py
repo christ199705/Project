@@ -39,7 +39,4 @@ class ProjectByInterfacesSerializer(ModelSerializer):
 
     class Meta:
         model = Projects
-        fields = [ "interfaces"]
-
-
-
+        fields = ["interfaces"]

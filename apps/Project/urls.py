@@ -19,6 +19,7 @@ from django.urls import path, include
 from rest_framework import routers
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
 # from rest_framework.schemas.views import SchemaView
 
 Schema_view = get_schema_view(
@@ -34,6 +35,14 @@ Schema_view = get_schema_view(
     # permission_classes=(permissions.AllowAny,),  权限类
 )
 urlpatterns = [
+
     path('project/', include("projects.urls")),
+    path('interface/', include("interfaces.urls")),
+    path('env/', include("envs.urls")),
+    path('debugtalk/', include("debugtalks.urls")),
+    path('testsuit/', include("testsuits.urls")),
+    path('report/', include("reports.urls")),
+    path('config/', include("configs.urls")),
+    path('api/', include("rest_framework.urls")),
     path('swagger/', Schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

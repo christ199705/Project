@@ -11,9 +11,13 @@ from .models import Projects
 from .serializers import ProjectModelSerializer, ProjectByInterfacesSerializer, ByInterfacesSerializer
 # Create your views here.
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListCreateAPIView
 from django.db.models import *
 from .utils import get_count_by_project
+from debugtalks.models import DebugTalks
+from rest_framework import mixins
 
+from rest_framework.generics import ListCreateAPIView
 
 class ProjectView(ModelViewSet):
     queryset = Projects.objects.all()
@@ -28,9 +32,16 @@ class ProjectView(ModelViewSet):
         instance = self.get_object()
         # 到这说明ID存在，但是判断下 ID是否已经被软删除了，如果软删除了报404
         if instance.is_delete is False:
+            # debug文件也需要进行软删除
+            debug = DebugTalks.objects.get(project=instance.id)
+            debug.is_delete = True
+            debug.save()
+
             instance.is_delete = True
             instance.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+
         # 说明ID存在,但是已经被删除了
         else:
             raise Http404
@@ -52,19 +63,23 @@ class ProjectView(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(Projects.objects.filter(is_delete=False))
+        # queryset = self.filter_queryset(Projects.objects.filter(is_delete=False))
+        #
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     # 把serializer.data 传入我的自定义函数，增加字段，然后返回新的data，data是字典格式
+        #     data =
+        #     return self.get_paginated_response(data)
+        #
+        # serializer = self.get_serializer(queryset, many=True)
+        # # 把serializer.data 传入我的自定义函数，增加字段，然后返回新的data
+        # data = get_count_by_project(serializer.data)
+        # return Response(data)
+        response = super().list(request, *args, **kwargs)
+        response.data["results"] = get_count_by_project(response.data["results"])
+        return response
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            # 把serializer.data 传入我的自定义函数，增加字段，然后返回新的data，data是字典格式
-            data = get_count_by_project(serializer.data)
-            return self.get_paginated_response(data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        # 把serializer.data 传入我的自定义函数，增加字段，然后返回新的data
-        data = get_count_by_project(serializer.data)
-        return Response(data)
 
     @action(methods=["get"], detail=True)
     # 通过Id查询所有接口信息

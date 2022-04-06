@@ -18,3 +18,6 @@ class Projects(BaseModel):
         db_table = "tb_projects"
         verbose_name = "项目信息表"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
