@@ -43,6 +43,7 @@ urlpatterns = [
     path('testsuit/', include("testsuits.urls")),
     path('report/', include("reports.urls")),
     path('config/', include("configs.urls")),
+    path('testcase/', include("testcases.urls")),
     path('api/', include("rest_framework.urls")),
     path('swagger/', Schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
